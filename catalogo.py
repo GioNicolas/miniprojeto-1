@@ -18,10 +18,22 @@ class Catalogo:
         self._usuarios_por_nome = {}
         for usuario in dados["usuarios"]:
             self._usuarios_por_nome[usuario["nome"].lower()] = usuario["id"]    
-                
+
     # --- usuários e playlists ---
     def listar_usuarios(self) -> list[str]: ...
-    def buscar_usuario_por_nome(self, nome: str) -> str | None: ...
+    def buscar_usuario_por_nome(self, nome: str) -> str | None:
+        nome_minusculo = nome.lower()
+        id_do_nome = self._usuarios_por_nome.get(nome_minusculo)
+
+        return id_do_nome
+        
+
+
+
+
+
+
+
     def playlist_de(self, usuario_id: str) -> list[str] | None: ...
     def conteudo_na_posicao(self, usuario_id: str, posicao: int) -> str | None: ...
     def intersecao_playlists(self, usuario_ids: list[str]) -> list[str]: ...
