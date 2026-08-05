@@ -4,6 +4,7 @@ Esta é a peça central do projeto: carrega o JSON uma vez, constrói os
 índices no __init__ e expõe os 16 métodos que o main.py e o cli.py usam.
 """
 import json
+from collections import deque
 
 class Catalogo:
     def __init__(self, caminho_json: str):
@@ -27,6 +28,8 @@ class Catalogo:
         for conteudo_id, conteudo in self._conteudos.items():
             for genero in self._achatar_generos(conteudo["generos"]):
                 self._ids_por_genero.setdefault(genero, []).append(conteudo_id)
+
+        self._fila = deque() #fila de reprodução, começa vazia
 
     def _achatar_generos(self, generos) -> list[str]:
         if isinstance(generos, str):
@@ -142,6 +145,16 @@ class Catalogo:
         return sorted(ids_do_genero)
 
     # --- fila de reprodução ---
-    def enfileirar(self, conteudo_id: str) -> bool: ...
-    def proximo(self) -> str | None: ...
-    def fila_atual(self) -> list[str]: ...
+    def enfileirar(self, conteudo_id: str) -> bool:
+        if conteudo_id not in self._conteudos:
+            return False
+
+        self._fila.append(conteudo_id)
+        return True
+    def proximo(self) -> str | None:
+        if not self._fila:
+            return None
+
+        return self._fila.popleft()
+    def fila_atual(self) -> list[str]:
+        return list(self._fila)
