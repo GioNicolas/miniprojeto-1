@@ -77,8 +77,29 @@ class Catalogo:
         return sorted(intersecao)
 
     # --- dados de um conteúdo ---
-    def rating_de(self, conteudo_id: str) -> float | None: ...
-    def duracao_total_de(self, conteudo_id: str) -> int | None: ...
+    def rating_de(self, conteudo_id: str) -> float | None:
+        conteudo = self._conteudos.get(conteudo_id)
+        if conteudo is None:
+            return None
+
+        rating = conteudo.get("rating")
+        if rating is None:
+            return None
+
+        return float(rating)
+    def duracao_total_de(self, conteudo_id: str) -> int | None:
+        conteudo = self._conteudos.get(conteudo_id)
+        if conteudo is None:
+            return None
+
+        if conteudo["tipo"] == "musica":
+            return conteudo["duracao_seg"]
+
+        duracao_total = 0
+        for faixa in conteudo["faixas"]:
+            if faixa["duracao_seg"] is not None:
+                duracao_total += faixa["duracao_seg"]
+        return duracao_total
     def generos_de(self, conteudo_id: str) -> list[str] | None:
         conteudo = self._conteudos.get(conteudo_id)
         if conteudo is None:
@@ -87,9 +108,34 @@ class Catalogo:
         generos = self._achatar_generos(conteudo["generos"])
 
         return sorted(generos)
-    def plataformas_de(self, conteudo_id: str) -> list[str] | None: ...
-    def data_adicionado_de(self, conteudo_id: str) -> str | None: ...
-    def execucoes_de(self, conteudo_id: str) -> int | None: ...
+    def plataformas_de(self, conteudo_id: str) -> list[str] | None:
+        conteudo = self._conteudos.get(conteudo_id)
+        if conteudo is None:
+            return None
+
+        plataformas = conteudo.get("plataformas", [])
+
+        return sorted(plataformas)
+    def data_adicionado_de(self, conteudo_id: str) -> str | None:
+        conteudo = self._conteudos.get(conteudo_id)
+        if conteudo is None:
+            return None
+
+        data = conteudo["data_adicionado"]
+        if "/" in data:
+            dia, mes, ano = data.split("/")
+            return f"{ano}-{mes}-{dia}"
+        return data
+    def execucoes_de(self, conteudo_id: str) -> int | None:
+        conteudo = self._conteudos.get(conteudo_id)
+        if conteudo is None:
+            return None
+
+        execucoes = conteudo["engajamento"]["execucoes"]
+        if isinstance(execucoes, str):
+            execucoes = execucoes.replace(",", "")
+
+        return int(execucoes)
     def conteudos_do_genero(self, genero: str) -> list[str]:
         ids_do_genero = self._ids_por_genero.get(genero, [])
 
