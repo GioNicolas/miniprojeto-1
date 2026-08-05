@@ -29,7 +29,7 @@ class Catalogo:
             for genero in self._achatar_generos(conteudo["generos"]):
                 self._ids_por_genero.setdefault(genero, []).append(conteudo_id)
 
-        self._fila = deque() #fila de reprodução, começa vazia
+        self._fila = deque() #fila de reprodução
 
     def _achatar_generos(self, generos) -> list[str]:
         if isinstance(generos, str):
@@ -158,3 +158,13 @@ class Catalogo:
         return self._fila.popleft()
     def fila_atual(self) -> list[str]:
         return list(self._fila)
+
+    # --- auxiliar de exibição (usado pelo cli.py) ---
+    def descricao_de(self, conteudo_id: str) -> str | None:
+        conteudo = self._conteudos.get(conteudo_id)
+        if conteudo is None:
+            return None
+
+        tipo = "álbum" if conteudo["tipo"] == "album" else "música"
+
+        return f"{conteudo['titulo']}, de {conteudo['artista']} ({tipo})"
