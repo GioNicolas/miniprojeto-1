@@ -16,11 +16,16 @@ class Catalogo:
             self._conteudos[item["id"]] = item    
 
         self._usuarios_por_nome = {}
+        self._nomes_usuarios = []
         for usuario in dados["usuarios"]:
-            self._usuarios_por_nome[usuario["nome"].lower()] = usuario["id"]    
+            self._usuarios_por_nome[usuario["nome"].lower()] = usuario["id"]
+            self._nomes_usuarios.append(usuario["nome"])    
 
     # --- usuários e playlists ---
-    def listar_usuarios(self) -> list[str]: ...
+    def listar_usuarios(self) -> list[str]:
+        usuarios = sorted(self._nomes_usuarios)
+
+        return usuarios
     def buscar_usuario_por_nome(self, nome: str) -> str | None:
         nome_minusculo = nome.lower()
         id_do_nome = self._usuarios_por_nome.get(nome_minusculo)
