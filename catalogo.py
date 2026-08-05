@@ -10,16 +10,18 @@ class Catalogo:
         with open(caminho_json, "r", encoding="utf-8") as arquivo:
             dados = json.load(arquivo)
 
-        self._conteudos = {}
+        self._conteudos = {} #ID: JSON completo,
 
         for item in dados["conteudos"]:
-            self._conteudos[item["id"]] = item    
+            self._conteudos[item["id"]] = item
 
-        self._usuarios_por_nome = {}
-        self._nomes_usuarios = []
+        self._usuarios_por_nome = {} #nome minusculo: ID,
+        self._nomes_usuarios = [] #Nome normal: ,
+        self._playlist_por_usuario = {} #ID: Playlist
         for usuario in dados["usuarios"]:
             self._usuarios_por_nome[usuario["nome"].lower()] = usuario["id"]
-            self._nomes_usuarios.append(usuario["nome"])    
+            self._nomes_usuarios.append(usuario["nome"])
+            self._playlist_por_usuario[usuario["id"]] = usuario["playlist"]
 
     # --- usuários e playlists ---
     def listar_usuarios(self) -> list[str]:
@@ -31,16 +33,18 @@ class Catalogo:
         id_do_nome = self._usuarios_por_nome.get(nome_minusculo)
 
         return id_do_nome
-        
 
+    def playlist_de(self, usuario_id: str) -> list[str] | None:
+        playlist = self._playlist_por_usuario.get(usuario_id)
 
-
-
-
-
-
-    def playlist_de(self, usuario_id: str) -> list[str] | None: ...
-    def conteudo_na_posicao(self, usuario_id: str, posicao: int) -> str | None: ...
+        return playlist
+    def conteudo_na_posicao(self, usuario_id: str, posicao: int) -> str | None:
+        playlist = self.playlist_de(usuario_id)
+        if playlist is None:
+            return None
+        if 0 <= posicao < len(playlist):
+            return playlist[posicao]
+        return None
     def intersecao_playlists(self, usuario_ids: list[str]) -> list[str]: ...
 
     # --- dados de um conteúdo ---
