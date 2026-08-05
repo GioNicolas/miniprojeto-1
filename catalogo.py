@@ -45,7 +45,22 @@ class Catalogo:
         if 0 <= posicao < len(playlist):
             return playlist[posicao]
         return None
-    def intersecao_playlists(self, usuario_ids: list[str]) -> list[str]: ...
+    def intersecao_playlists(self, usuario_ids: list[str]) -> list[str]:
+        if not usuario_ids:
+            return []
+
+        playlists = []
+        for usuario_id in usuario_ids:
+            playlist = self._playlist_por_usuario.get(usuario_id)
+            if playlist is None:
+                return []
+            playlists.append(set(playlist))
+
+        intersecao = playlists[0]
+        for playlist in playlists[1:]:
+            intersecao &= playlist
+
+        return sorted(intersecao)
 
     # --- dados de um conteúdo ---
     def rating_de(self, conteudo_id: str) -> float | None: ...
