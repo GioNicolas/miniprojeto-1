@@ -23,6 +23,20 @@ class Catalogo:
             self._nomes_usuarios.append(usuario["nome"])
             self._playlist_por_usuario[usuario["id"]] = usuario["playlist"]
 
+        self._ids_por_genero = {} #genero: lista de IDs
+        for conteudo_id, conteudo in self._conteudos.items():
+            for genero in self._achatar_generos(conteudo["generos"]):
+                self._ids_por_genero.setdefault(genero, []).append(conteudo_id)
+
+    def _achatar_generos(self, generos) -> list[str]:
+        if isinstance(generos, str):
+            return [generos]
+
+        achatados = []
+        for item in generos:
+            achatados.extend(self._achatar_generos(item))
+        return achatados
+
     # --- usuários e playlists ---
     def listar_usuarios(self) -> list[str]:
         usuarios = sorted(self._nomes_usuarios)
@@ -65,11 +79,21 @@ class Catalogo:
     # --- dados de um conteúdo ---
     def rating_de(self, conteudo_id: str) -> float | None: ...
     def duracao_total_de(self, conteudo_id: str) -> int | None: ...
-    def generos_de(self, conteudo_id: str) -> list[str] | None: ...
+    def generos_de(self, conteudo_id: str) -> list[str] | None:
+        conteudo = self._conteudos.get(conteudo_id)
+        if conteudo is None:
+            return None
+
+        generos = self._achatar_generos(conteudo["generos"])
+
+        return sorted(generos)
     def plataformas_de(self, conteudo_id: str) -> list[str] | None: ...
     def data_adicionado_de(self, conteudo_id: str) -> str | None: ...
     def execucoes_de(self, conteudo_id: str) -> int | None: ...
-    def conteudos_do_genero(self, genero: str) -> list[str]: ...
+    def conteudos_do_genero(self, genero: str) -> list[str]:
+        ids_do_genero = self._ids_por_genero.get(genero, [])
+
+        return sorted(ids_do_genero)
 
     # --- fila de reprodução ---
     def enfileirar(self, conteudo_id: str) -> bool: ...
