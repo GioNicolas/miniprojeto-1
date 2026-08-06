@@ -29,7 +29,7 @@ isso: cada consulta vira um acesso a dicionário.
 
 `intersecao_playlists` recebe uma lista de usuários que pode ser qualquer
 combinação, então não dá pra pré-computar a interseção de todo subconjunto
-possível dos 33 usuários. Seriam 2³³ combinações. Por isso esse método
+possível dos 33 usuários. Seriam muitas combinações. Por isso esse método
 calcula na hora: transforma cada playlist num `set` e intersecta. Ainda
 assim sai rápido porque buscar a playlist de cada usuário já é O(1) (por
 conta do `_playlist_por_usuario`), e a interseção de sets em si só depende
